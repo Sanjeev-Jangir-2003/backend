@@ -1,0 +1,48 @@
+import React, { useState } from 'react';
+
+function App() {
+    const [jsonData, setJsonData] = useState('');
+    const [apiResponse, setApiResponse] = useState(null);
+    const [displayCategory, setDisplayCategory] = useState('');
+
+    const handleSubmit = async () => {
+        try {
+            const response = await fetch('https://your-railway-backend-url/bfhl', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: JSON.parse(jsonData) })
+            });
+            const data = await response.json();
+            setApiResponse(data);
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
+    return (
+        <div>
+            <h1>Roll Number</h1>
+            <textarea 
+                value={jsonData} 
+                onChange={e => setJsonData(e.target.value)} 
+                placeholder='Enter JSON data here'
+            />
+            <button onClick={handleSubmit}>Submit</button>
+            <select onChange={e => setDisplayCategory(e.target.value)}>
+                <option value="">Select Category</option>
+                <option value="numbers">Numbers</option>
+                <option value="alphabets">Alphabets</option>
+                <option value="highest_alphabet">Highest Alphabet</option>
+            </select>
+
+            {apiResponse && displayCategory && (
+                <div>
+                    <h2>{displayCategory}</h2>
+                    <pre>{JSON.stringify(apiResponse[displayCategory], null, 2)}</pre>
+                </div>
+            )}
+        </div>
+    );
+}
+
+export default App;
